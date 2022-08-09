@@ -1,0 +1,25 @@
+{{#if prod}}
+  <table class="table table-dark table-hover">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Precio</th>
+      <th scope="col">Imagen</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each prod}}
+      <tr>
+       <th scope="row">{{this.id}}</th>
+        <td>{{this.title}}</td>
+        <td>{{this.price}}</td>
+        <td > <img class= "icon" src={{this.thumbnail}} alt=""></td>
+      </tr>
+    {{/each}}
+  </tbody>
+
+</table>
+{{else}}
+  <h2>No hay productos</h2>
+{{/if}}

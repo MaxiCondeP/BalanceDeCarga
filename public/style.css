@@ -1,0 +1,50 @@
+html{
+    margin: 1rem;
+    
+
+}
+
+.icon{
+    width: 2rem;
+    background-color: white;
+    border-radius: 0.5rem;
+}
+
+.container{
+    margin: 1rem;
+    padding: 3rem;
+    background-color: rgb(216, 209, 209);
+    width: 100%;
+    border-radius: 0.5rem;
+}
+
+.messageListContainer{
+    margin: 1rem 0 1rem 0;
+    padding: 0.5rem;
+    background-color: rgb(205, 199, 199);
+    border-radius: 0.5rem;
+    min-height: 30%;
+
+}
+
+.emailChat{
+    display: inline; 
+    font-weight: bold; 
+    color: blue;
+}
+
+.dateChat{
+    display: inline; 
+    color:brown;
+}
+
+.textChat{
+    display: inline; 
+    font-style: italic; 
+    color: green;
+} 
+
+.btnChat{
+    border-radius: 0.4rem;
+    border-style: double;
+}

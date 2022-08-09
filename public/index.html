@@ -1,0 +1,68 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
+    integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous" />
+
+  <link rel="stylesheet" href="/style.css" />
+  <script src="/socket.io/socket.io.js"></script>
+
+  <title>Productos</title>
+</head>
+
+<body>
+  <h3>Carga de productos</h3>
+  <div class="container">
+    <form id="productsForm" action="http://localhost:8080/api/productos" method="post">
+      <div class="mb-3">
+        <label for="title">Nombre del producto: </label>
+        <input id="titleInput" type="text" class="form-control" name="title">
+        <div class="form-text">Ingrese el nombre del producto</div>
+      </div>
+      <div class="mb-3">
+        <label for="price">Precio: </label>
+        <input id="priceInput" type="number" class="form-control" name="price">
+        <div class="form-text">Ingrese el precio del producto</div>
+      </div>
+      <div class="mb-3 ">
+        <label for="thumbnail"> Imagen: </label>
+        <input id="thumbnailInput" type="text" class="form-control" name="thumbnail">
+        <div class="form-text">Ingrese el link a la imagen del producto</div>
+      </div>
+      <button type="submit" class="btn btn-primary">Guardar </button>
+    </form>
+  </div>
+
+  <h3>Productos</h3>
+  <div id="tableContainer" class="container"></div>
+
+  <h3>Centro de mensajes</h3>
+
+  <div id="chatContainer" class="container">
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">E-mail</span>
+      <input id="emailInput" type="text" class="form-control" placeholder="Ingrese su e-mail" aria-label="Username"
+        aria-describedby="basic-addon1">
+    </div>
+
+
+    <div id="messageListContainer" class="messageListContainer">
+
+    </div>
+    <div class="input-group mb-3">
+      <input id="textMsgInput" type="text" class="form-control" placeholder="Escriba su mensaje"
+        aria-label="Recipient's username" aria-describedby="button-addon2">
+      <button class="btnChat" id="btnEnviarMsj" disabled="true" type="button">Enviar</button>
+    </div>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+
+</html>
