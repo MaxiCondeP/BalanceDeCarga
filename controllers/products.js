@@ -26,15 +26,8 @@ export class Contenedor {
 
     ////Agrego producto al array
     save(product) {
-        //Defino el valor del id en base al contenido del array
-        let lastId = 1;
-        if (this.products.length > 0) {
-            lastId = this.products[this.products.length - 1].id + 1;
-        }
-        console.log(product)
-        let newProduct = { ...product, id: lastId };
         //agrego el producto al array
-        this.products.push(newProduct);
+        this.products.push(product);
         //muestro el último id
         console.log(`El último id es: ${lastId}`);
         return lastId;

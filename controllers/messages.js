@@ -32,12 +32,7 @@ export class Chat {
         try {
             const messages = await this.getall();
             //genero el id para cada msj
-            let lastId = 1;
-            if (messages.length > 0) {
-                lastId = messages[messages.length - 1].id + 1;
-            }
-            const newMessage = { ...message, id: lastId }
-            messages.push(newMessage);
+            messages.push(message);
             const newFile=JSON.stringify(messages, null, "\t");
             await fs.promises.writeFile(this.rutaDeArchivo, newFile);
 
