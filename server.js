@@ -1,11 +1,11 @@
-import { Contenedor, Product } from "./controllers/products.js";
-import { Chat, Message } from "./controllers/messages.js";
-import { dbManager } from "./controllers/dbManager.js"
+import { Message } from "./containers/fileMessageContainer.js";
 import express from "express";
 import handlebars from "express-handlebars";
 import { Server as HTTPServer } from "http";
 import { Server as SocketServer } from "socket.io";
-
+import { fakeProducts } from "./utils/addProduct.js";
+import { normalizeMessages, authorSchema, messageSchema } from "./utils/normalizr.js";
+import { daoMessages, daoProducts } from "./daos/index.js";
 const app = express();
 const httpServer = new HTTPServer(app);
 const io = new SocketServer(httpServer)
@@ -31,37 +31,50 @@ app.use(express.urlencoded({ extended: true }));
 
 
 ////Instancio la clase
-//const productos = new Contenedor();
-const dbProductos = new dbManager('products');
-const dbMessages = new dbManager('messages');
 
-// let producto1 = new Product("Cargador", 2500, "https://cdn4.iconfinder.com/data/icons/web-essential-4/64/31-web_essential-128.png")
-// let producto2 = new Product("Mouse", 1000, "https://cdn3.iconfinder.com/data/icons/computer-51/100/computer_10-128.png")
-// let producto3 = new Product("Monitor", 7000, "https://cdn4.iconfinder.com/data/icons/multimedia-75/512/multimedia-37-128.png")
-// productos.save(producto1);
-// productos.save(producto2);
-// productos.save(producto3);
-//let chat = new Chat("messages");
+
+///GENERO LOS 5 PRODUCTOS MOCKEADOS
+async function getFakerProducts() {
+  for (let i = 0; i <= 5; i++) {
+    let product = fakeProducts();
+    console.log(product);
+    await daoProducts.save(product);
+  }
+}
+
 
 io.on("connection", async (socket) => {
   console.log("Nuevo cliente conectado");
+  ///getFakerProducts();
+
   try {
-    socket.server.emit("RENDER_PRODUCTS", await dbProductos.getAll());
-    socket.server.emit("RENDER_CHAT", await dbMessages.getAll());
+    socket.server.emit("RENDER_PRODUCTS", await daoProducts.getAll());
+    let chat= await daoMessages.getAll();
+    //let normalizedChat= normalizeMessages(chat);
+    //console.log(normalizedChat)
+    socket.server.emit("RENDER_CHAT",{chat: chat ,schema: messageSchema});
 
   } catch (err) {
     console.log(err);
   }
 
   socket.on("ADD_PRODUCT", async (product) => {
-    await dbProductos.addRecord(product);
-    io.sockets.emit("RENDER_PRODUCTS", await dbProductos.getAll());
+    await daoProducts.save(product);
+    io.sockets.emit("RENDER_PRODUCTS", await daoProducts.getAll());
   });
 
   socket.on("ADD_MESSAGE", async (message) => {
-    const newMessage = new Message(message.email, message.text);
-    await dbMessages.addRecord(newMessage);
-    socket.server.emit("RENDER_CHAT", await dbMessages.getAll());
+    const newMessage = new Message(
+      message.author.email,
+      message.author.name,
+      message.author.lastname,
+      message.author.age,
+      message.author.alias,
+      message.author.avatar,
+      message.text);
+    await daoMessages.save(newMessage);
+    let chat= await daoMessages.getAll();
+    socket.server.emit("RENDER_CHAT",{chat: normalizedChat ,schema: messageSchema});
   });
 
 });

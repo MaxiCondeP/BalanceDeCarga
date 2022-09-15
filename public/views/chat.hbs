@@ -1,12 +1,12 @@
-
-  {{#if messages}}
-    {{#each messages}}
-    <div >
-      <p  class="emailChat"> {{this.email}} </p>
-      <p class="dateChat">{{this.date}} </p>
-      <p class="textChat"> Mensaje: {{this.text}}</p>
-    </div>
-    {{/each}}
-    {{else}}
-      <h5>No hay Mensajes</h5>
-  {{/if}}
+{{#if messages}}
+{{#each messages}}
+<div  class="divChat">
+  <img class="imgChat" src={{this.author.avatar}} alt="">
+  <p class="emailChat"> {{this.author.email}} </p>
+  <p class="dateChat">{{this.date}} </p>
+  <p class="textChat"> Mensaje: {{this.text}}</p>
+</div>
+{{/each}}
+{{else}}
+<h5>No hay Mensajes</h5>
+{{/if}}

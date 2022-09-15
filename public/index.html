@@ -13,6 +13,7 @@
 
   <link rel="stylesheet" href="/style.css" />
   <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
 
   <title>Productos</title>
 </head>
@@ -49,6 +50,31 @@
     <div class="input-group mb-3">
       <span class="input-group-text" id="basic-addon1">E-mail</span>
       <input id="emailInput" type="text" class="form-control" placeholder="Ingrese su e-mail" aria-label="Username"
+        aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">Nombre</span>
+      <input id="nameInput" type="text" class="form-control" placeholder="Ingrese su nombre" aria-label="Username"
+        aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">Apellido</span>
+      <input id="lastNameInput" type="text" class="form-control" placeholder="Ingrese su apellido" aria-label="Username"
+        aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">Edad</span>
+      <input id="ageInput" type="number" class="form-control" placeholder="Ingrese su edad" aria-label="Username"
+        aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">Alias</span>
+      <input id="aliasInput" type="text" class="form-control" placeholder="Ingrese su Alias" aria-label="Username"
+        aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">Avatar</span>
+      <input id="avatarInput" type="text" class="form-control" placeholder="Ingrese el link de su avatar" aria-label="Username"
         aria-describedby="basic-addon1">
     </div>
 

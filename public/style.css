@@ -1,7 +1,12 @@
 html{
     margin: 1rem;
+    border-radius: 0.5rem;
     
 
+}
+
+span{
+    width: 5rem;
 }
 
 .icon{
@@ -18,6 +23,7 @@ html{
     border-radius: 0.5rem;
 }
 
+
 .messageListContainer{
     margin: 1rem 0 1rem 0;
     padding: 0.5rem;
@@ -25,6 +31,9 @@ html{
     border-radius: 0.5rem;
     min-height: 30%;
 
+}
+.divChat{
+    padding: 0.5rem;
 }
 
 .emailChat{
@@ -44,6 +53,10 @@ html{
     color: green;
 } 
 
+.imgChat{
+    width: 2rem;
+    border-radius: 0.5rem;
+}
 .btnChat{
     border-radius: 0.4rem;
     border-style: double;

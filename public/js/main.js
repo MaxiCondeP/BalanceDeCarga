@@ -1,81 +1,100 @@
-const socket= io.connect();
+const socket = io.connect();
 
-socket.on("connect",()=>{
+socket.on("connect", () => {
     console.log("Conectado al servidor");
 });
 
 
 
 ///Traigo la plantilla para generar el html
-const prodTable= async(prod)=>{
-    const tFile= await fetch("./views/table.hbs");
-    const view= await tFile.text();
-    const template= Handlebars.compile(view);
-    const html= template({prod: prod})
-    return html; 
+const prodTable = async (prod) => {
+    const tFile = await fetch("./views/table.hbs");
+    const view = await tFile.text();
+    const template = Handlebars.compile(view);
+    const html = template({ prod: prod })
+    return html;
 }
 
-const chatList= async(messages)=>{
-    const lFile= await fetch("./views/chat.hbs");
-    const lView= await lFile.text();
-    const ltemplate= Handlebars.compile(lView);
-    const lhtml= ltemplate({messages: messages});
+const chatList = async (messages) => {
+    const lFile = await fetch("./views/chat.hbs");
+    const lView = await lFile.text();
+    const ltemplate = Handlebars.compile(lView);
+    const lhtml = ltemplate({ messages: messages });
     return lhtml;
 }
 
-socket.on("RENDER_PRODUCTS", (prod)=>{
-    prodTable(prod).then((html)=>{
-        tableContainer.innerHTML= html;
+//normalizr esquemas
+const authorsSchema = new normalizr.schema.Entity('authors');
+const msjSchema = new normalizr.schema.Entity('mensajes', { author: authorsSchema }, { idAttribute: 'id' });
+const fileSchema = [msjSchema]
+
+
+socket.on("RENDER_PRODUCTS", (prod) => {
+    prodTable(prod).then((html) => {
+        tableContainer.innerHTML = html;
     });
 })
 
-socket.on("RENDER_CHAT", (messages)=>{
-    chatList(messages).then((lhtml)=>{
-        messageListContainer.innerHTML= lhtml; 
+socket.on("RENDER_CHAT", ({chat ,schema}) => {
+    ///const deNormalized= normalizr.denormalize(chat.result, [schema] , chat.entities);
+    chatList(chat).then((lhtml) => {
+        messageListContainer.innerHTML = lhtml;
     });
-
 })
 
-const productsForm= document.querySelector('#productsForm');
-productsForm.addEventListener('submit', (e)=>{
+const productsForm = document.querySelector('#productsForm');
+productsForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const titleInput= document.querySelector('#titleInput')
-    const priceInput= document.querySelector('#priceInput');
-    const thumbnailInput= document.querySelector('#thumbnailInput');
-    const newProd={
+    const titleInput = document.querySelector('#titleInput')
+    const priceInput = document.querySelector('#priceInput');
+    const thumbnailInput = document.querySelector('#thumbnailInput');
+    const newProd = {
         title: titleInput.value,
-        price: priceInput.value, 
+        price: priceInput.value,
         thumbnail: thumbnailInput.value
     }
-    socket.emit("ADD_PRODUCT" ,newProd); 
-    titleInput.value="";
-    priceInput.value="";
-    thumbnailInput.value="";
+    socket.emit("ADD_PRODUCT", newProd);
+    titleInput.value = "";
+    priceInput.value = "";
+    thumbnailInput.value = "";
 })
 
-const btnSend= document.querySelector('#btnEnviarMsj');
-btnSend.addEventListener('click',(e)=>{
+const btnSend = document.querySelector('#btnEnviarMsj');
+btnSend.addEventListener('click', (e) => {
     e.preventDefault();
-    const emailInput= document.querySelector("#emailInput");
-    const textMsgInput= document.querySelector("#textMsgInput");
-    const newMsg={
-        text: textMsgInput.value, 
-        email: emailInput.value
+    const emailInput = document.querySelector("#emailInput");
+    const nameInput = document.querySelector("#nameInput");
+    const lastNameInput = document.querySelector("#lastNameInput");
+    const ageInput = document.querySelector("#ageInput");
+    const aliasInput = document.querySelector("#aliasInput");
+    const avatarInput = document.querySelector("#avatarInput");
+    const textMsgInput = document.querySelector("#textMsgInput");
+    const newMsg = {
+        author: {
+            email: emailInput.value,
+            name: nameInput.value,
+            lastname: lastNameInput.value,
+            age: ageInput.value,
+            alias: aliasInput.value,
+            avatar: avatarInput.value
+        },
+        text: textMsgInput.value,
     }
-    socket.emit("ADD_MESSAGE" ,newMsg); 
-    emailInput.value="";
-    textMsgInput.value="";
     
+    socket.emit("ADD_MESSAGE", newMsg);
+    emailInput.value = "";
+    textMsgInput.value = "";
+
 });
 
-const emailInput= document.querySelector("#emailInput");
-emailInput.addEventListener('change',(e)=>{
-    if(emailInput.value!==""){
-        btnSend.disabled=false;
-    }else{
-        btnSend.disabled=true; 
+const emailInput = document.querySelector("#emailInput");
+emailInput.addEventListener('change', (e) => {
+    if (emailInput.value !== "") {
+        btnSend.disabled = false;
+    } else {
+        btnSend.disabled = true;
     }
-    
+
 });
 
 
