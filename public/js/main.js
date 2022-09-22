@@ -1,4 +1,7 @@
+
 const socket = io.connect();
+let nameLogin="";
+
 
 socket.on("connect", () => {
     console.log("Conectado al servidor");
@@ -23,19 +26,21 @@ const chatList = async (messages) => {
     return lhtml;
 }
 
-//normalizr esquemas
-const authorsSchema = new normalizr.schema.Entity('authors');
-const msjSchema = new normalizr.schema.Entity('mensajes', { author: authorsSchema }, { idAttribute: 'id' });
-const fileSchema = [msjSchema]
 
 
-socket.on("RENDER_PRODUCTS", (prod) => {
+let logSpan = document.querySelector("#logSpan");
+
+socket.on("RENDER_PRODUCTS", (prod, name) => {
     prodTable(prod).then((html) => {
         tableContainer.innerHTML = html;
     });
+    nameLogin= name;
+    let text= "Bienvenido "+nameLogin
+    logSpan.innerHTML= text;
+    
 })
 
-socket.on("RENDER_CHAT", ({chat ,schema}) => {
+socket.on("RENDER_CHAT", (chat) => {
     ///const deNormalized= normalizr.denormalize(chat.result, [schema] , chat.entities);
     chatList(chat).then((lhtml) => {
         messageListContainer.innerHTML = lhtml;
@@ -96,5 +101,30 @@ emailInput.addEventListener('change', (e) => {
     }
 
 });
+
+function delayRedirect(){
+    var count = 2;
+    setInterval(function(){
+        count--;
+        if (count == 0) {
+            window.location = 'http://localhost:8080/'; 
+        }
+    },1000);
+}
+
+const btnLogout = document.querySelector("#btnLogout");
+const divLogout = document.querySelector("#divLogout");
+btnLogout.addEventListener('click', (e) => {
+    let text= "Hasta luego "+nameLogin;
+    logSpan.innerHTML= text;
+    delayRedirect()
+});
+
+
+
+
+
+
+
 
 

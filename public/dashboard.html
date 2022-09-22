@@ -13,12 +13,22 @@
 
   <link rel="stylesheet" href="/style.css" />
   <script src="/socket.io/socket.io.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
 
   <title>Productos</title>
 </head>
 
+
 <body>
+  <div id="divLogout" class="loggedDb">
+    <form id="logoutForm" action="http://localhost:8080/logout" method="get">
+      <div class="input-group mb-3"></div>
+        <span id="logSpan" type="text" class="form-control" aria-label="Recipient's username"
+          aria-describedby="button-addon2">Bienvenido</span>
+        <button type="submit" id="btnLogout" class="btnChat" type="button">Logout</button>
+      </div>
+    </form>
+  </div>
+
   <h3>Carga de productos</h3>
   <div class="container">
     <form id="productsForm" action="http://localhost:8080/api/productos" method="post">
@@ -74,8 +84,8 @@
     </div>
     <div class="input-group mb-3">
       <span class="input-group-text" id="basic-addon1">Avatar</span>
-      <input id="avatarInput" type="text" class="form-control" placeholder="Ingrese el link de su avatar" aria-label="Username"
-        aria-describedby="basic-addon1">
+      <input id="avatarInput" type="text" class="form-control" placeholder="Ingrese el link de su avatar"
+        aria-label="Username" aria-describedby="basic-addon1">
     </div>
 
 

@@ -23,6 +23,26 @@ span{
     border-radius: 0.5rem;
 }
 
+.loginContainer{
+    margin: 2% 35% ;
+    padding: 3rem;
+    background-color: rgb(216, 209, 209);
+    width: 30%;
+    text-align: center;
+    border-radius: 0.5rem;
+}
+
+.loggedDb{
+    margin: 2% 15%;
+    padding: 3rem;
+    background-color: rgb(197, 192, 192);
+    width: 50%;
+    text-align: center;
+    border-radius: 0.5rem;
+
+}
+
+
 
 .messageListContainer{
     margin: 1rem 0 1rem 0;
