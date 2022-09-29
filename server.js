@@ -9,17 +9,80 @@ import session from 'express-session';
 import MongoStore from "connect-mongo";
 import path from "path";
 import { fileURLToPath } from 'url';
-import { isLogged } from "./utils/middlewares.js";
+import { authMiddleware } from "./utils/middlewares.js";
+import { Types } from 'mongoose';
+import { isValidPassword, createHash } from "./utils/utils.js"
+import { User} from "./utils/database.js"
+import passport from "passport";
+import { Strategy } from "passport-local";
 
+const LocalStrategy = Strategy;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-
+ 
 const app = express();
 const httpServer = new HTTPServer(app);
 const io = new SocketServer(httpServer)
-export let nameGlobal= "";
+export let logUsr = "";
+
+
+/////PASSPORT
+
+passport.use("login", new LocalStrategy(async (username, password, done) => {
+  const user = await User.findOne({ username });
+  let passHash = user.password;
+  if (!user || !isValidPassword(password, passHash)) {
+    return done(null, null, { message: "Invalid username or password" });
+  } else {
+    return done(null, user);
+  }
+
+}));
+
+passport.use("signup", new LocalStrategy({
+  passReqToCallback: true
+}, async (req, username, password, done) => {
+  const user = await User.findOne({ username });
+  if (user) {
+    return done(null, null);
+  }
+
+  const hashedPassword = createHash(password);
+  const newUser = new User({ username, password: hashedPassword });
+  await newUser.save();
+  return done(null, newUser);
+}));
+
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  id = Types.ObjectId(id);
+  const user = await User.findById(id);
+  done(null, user);
+});
+
+app.use(express.static("public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+  store: new MongoStore({
+    mongoUrl: 'mongodb+srv://root:pwd123@cluster0.age0did.mongodb.net/?retryWrites=true&w=majority',
+    dbName: "ecommerce-db",
+    collectionName: "sessions",
+    ttl: 600,//Seteo el tiempo de sesión en 10min
+    retries: 0
+  }),
+  secret: 'STRING_SECRET',
+  resave: false,
+  saveUninitialized: true,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 //Configuro motor de plantillas
@@ -35,59 +98,70 @@ app.engine(
 app.set("view engine", "hbs");
 app.set("views", "./public/views");
 
-app.use(express.static("public"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(session({
-  store: new MongoStore({
-    mongoUrl: 'mongodb+srv://root:pwd123@cluster0.age0did.mongodb.net/?retryWrites=true&w=majority',
-    dbName: "ecommerce-db",
-    collectionName: "sessions",
-    ttl: 60,
-    retries: 0
-  }),
-  secret: 'STRING_SECRET',
-  resave: false,
-  saveUninitialized: true,
-}));
-
-
-
-app.use((req, res, next) => {
-  isLogged(req, res, next);
-});
-
-app.post('/', (req, res, next) => {
-  const name = req.body.name;
-
-  if (name) {
-    req.session.name = name;
-    nameGlobal=name;
-    res.status=200;
-    res.sendFile(path.resolve(__dirname, './public/dashboard.html'));
-  }
-});
-
 
 app.get('/', (req, res, next) => {
-  if (res.statusCode !== 401) {
-    //renuevo la sesión
-    let refreshName= req.session.name;
-    req.session.name=refreshName;
-    res.sendFile(path.resolve(__dirname, './public/dashboard.html'));
+  res.redirect("/dashboard");
+});
+
+app.post("/signup", passport.authenticate("signup", {
+  failureRedirect: "/failSignup",
+}), (req, res) => {
+  req.session.user = req.user;
+  logUsr = req.session.user.username;
+  res.redirect("/dashboard");
+});
+
+app.post('/login', passport.authenticate("login", {
+  failureRedirect: "/failLogin",
+}), (req, res) => {
+  req.session.user = req.user;
+  logUsr = req.session.user.username;
+  res.redirect("/dashboard");
+});
+
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});
+
+app.get("/login", (req, res) => {
+  //Si esta autenticado va a directo a dashboard
+  if (!req.session.user) {
+    res.sendFile(__dirname + "/public/login.html");
   } else {
-    res.sendFile(path.resolve(__dirname, './public/login.html'));
+    res.redirect("/dashboard");
   }
+
+})
+
+app.get("/signup", (req, res) => {
+  res.sendFile(__dirname + "/public/signup.html");
+});
+
+app.get("/dashboard", authMiddleware, (req, res) => {
+  //refresco la sesión cada vez que entro al dashboard
+  let refreshName = req.session.name;
+  req.session.name = refreshName;
+  res.sendFile(path.resolve(__dirname, './public/dashboard.html'));
 });
 
 app.get("/logout", (req, res) => {
   req.session.destroy(err => {
-    if(err) {
+    if (err) {
       res.send("Error al cerrar sesion");
     }
+    res.redirect("/login")
   });
 });
+
+app.get("/failLogin", (req, res) => {
+  res.sendFile(__dirname + "/public/failLogin.html");
+})
+
+app.get("/failSignup", (req, res) => {
+  res.sendFile(__dirname + "/public/failSignup.html");
+})
+
+
 
 ////Instancio la clase
 
@@ -108,7 +182,7 @@ io.on("connection", async (socket) => {
   ///getFakerProducts();
 
   try {
-    socket.server.emit("RENDER_PRODUCTS", await daoProducts.getAll(), nameGlobal);
+    socket.server.emit("RENDER_PRODUCTS", await daoProducts.getAll(), logUsr);
     let chat = await daoMessages.getAll();
     socket.server.emit("RENDER_CHAT", chat);
 

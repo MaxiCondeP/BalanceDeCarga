@@ -1,8 +1,10 @@
-export const isLogged=(req,res, next)=>{
-    if(!req.session.name){
-        res.status(401);
-    } 
-    console.log(req.session.name)
-    next();
-}
+
+export const authMiddleware = (req, res, next)=> {
+    if (!req.isAuthenticated()) {
+      res.redirect("/login");
+    } else {
+      next();
+    }
+  };
+
 

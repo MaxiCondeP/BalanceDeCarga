@@ -1,6 +1,6 @@
 
 const socket = io.connect();
-let nameLogin="";
+let loginUsr="";
 
 
 socket.on("connect", () => {
@@ -30,12 +30,12 @@ const chatList = async (messages) => {
 
 let logSpan = document.querySelector("#logSpan");
 
-socket.on("RENDER_PRODUCTS", (prod, name) => {
+socket.on("RENDER_PRODUCTS", (prod, email) => {
     prodTable(prod).then((html) => {
         tableContainer.innerHTML = html;
     });
-    nameLogin= name;
-    let text= "Bienvenido "+nameLogin
+    loginUsr= email;
+    let text= "Bienvenido "+loginUsr
     logSpan.innerHTML= text;
     
 })
@@ -115,7 +115,7 @@ function delayRedirect(){
 const btnLogout = document.querySelector("#btnLogout");
 const divLogout = document.querySelector("#divLogout");
 btnLogout.addEventListener('click', (e) => {
-    let text= "Hasta luego "+nameLogin;
+    let text= "Hasta luego "+loginUsr;
     logSpan.innerHTML= text;
     delayRedirect()
 });
