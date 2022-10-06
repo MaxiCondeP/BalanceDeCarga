@@ -3,6 +3,7 @@ const socket = io.connect();
 let loginUsr="";
 
 
+
 socket.on("connect", () => {
     console.log("Conectado al servidor");
 });

@@ -43,6 +43,8 @@ span {
 
 
 
+
+
 .messageListContainer {
     margin: 1rem 0 1rem 0;
     padding: 0.5rem;
@@ -105,4 +107,23 @@ span {
     justify-content: center;
     flex-direction: column;
     
+}
+
+
+.infoContainer{
+    margin: 3% ;
+    padding: 3rem;
+    background-color: rgb(216, 209, 209);
+    width: 70%;
+    text-align: center;
+    border-radius: 0.5rem;
+
+}
+
+.infoContainer > div > label{
+   font-weight: bold;
+}
+
+.h1Info{
+    padding: 2rem;
 }

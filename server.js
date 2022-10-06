@@ -15,6 +15,12 @@ import { isValidPassword, createHash } from "./utils/utils.js"
 import { User} from "./utils/database.js"
 import passport from "passport";
 import { Strategy } from "passport-local";
+import {routeInfo, routeRandom} from "./routesApi.js"
+
+import parseArgs from "minimist";
+
+const options={default: {PORT: 8080}, alias:{p: "PORT"}}
+const args= parseArgs(process.argv.slice(2), options);
 
 const LocalStrategy = Strategy;
 const __filename = fileURLToPath(import.meta.url);
@@ -68,6 +74,7 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 app.use(session({
   store: new MongoStore({
     mongoUrl: 'mongodb+srv://root:pwd123@cluster0.age0did.mongodb.net/?retryWrites=true&w=majority',
@@ -83,6 +90,8 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use('/info',routeInfo);
+app.use('/api', routeRandom);
 
 
 //Configuro motor de plantillas
@@ -211,7 +220,8 @@ io.on("connection", async (socket) => {
 
 });
 
-const PORT = 8080;
+console.log("ARGGG", args)
+const PORT = args.PORT;
 const srv = httpServer.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${srv.address().port}`);
 });
