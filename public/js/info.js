@@ -18,6 +18,7 @@ let pMemory = document.querySelector("#pMemory");
 let pPath = document.querySelector("#pPath");
 let pDir = document.querySelector("#pDir");
 let pId = document.querySelector("#pId");
+let pNumCPUs= document.querySelector("#pNumCPUs");
 
 getInfo().then((info) => {
     data = JSON.parse(info)
@@ -28,6 +29,7 @@ getInfo().then((info) => {
     pPath.innerHTML = data.path;
     pId.innerHTML = data.id;
     pDir.innerHTML = data.folder;
+    pNumCPUs.innerHTML=data.numCPUs;
 
 });
 

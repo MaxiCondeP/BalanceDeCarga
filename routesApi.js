@@ -3,6 +3,9 @@ import { Router } from "express";
 export const routeRandom = Router();
 import { fork } from "child_process";
 
+import os from "os";
+    
+
 import path from "path";
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
@@ -26,8 +29,9 @@ let memory = process.memoryUsage().rss;
 let path = process.execPath;
 let id = process.pid;
 let folder = process.cwd();
-console.log({args, platform,version, memory, path,id, folder})
-res.json({args, platform,version, memory, path,id, folder})
+let numCPUs = os.cpus().length; 
+console.log({args, platform,version, memory, path,id, folder,numCPUs})
+res.json({args, platform,version, memory, path,id, folder, numCPUs})
 });
 
 

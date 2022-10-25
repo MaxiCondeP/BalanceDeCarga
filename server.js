@@ -12,21 +12,24 @@ import { fileURLToPath } from 'url';
 import { authMiddleware } from "./utils/middlewares.js";
 import { Types } from 'mongoose';
 import { isValidPassword, createHash } from "./utils/utils.js"
-import { User} from "./utils/database.js"
+import { User } from "./utils/database.js"
 import passport from "passport";
 import { Strategy } from "passport-local";
-import {routeInfo, routeRandom} from "./routesApi.js"
+import { routeInfo, routeRandom } from "./routesApi.js"
 
+import cluster from "cluster";
+import os from "os";
 import parseArgs from "minimist";
 
-const options={default: {PORT: 8080}, alias:{p: "PORT"}}
-const args= parseArgs(process.argv.slice(2), options);
+const options = { default: { PORT: 8080, MODE: "fork" }, alias: { p: "PORT", m: "MODE" } }
+const args = parseArgs(process.argv.slice(2), options);
+
 
 const LocalStrategy = Strategy;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
- 
+
 const app = express();
 const httpServer = new HTTPServer(app);
 const io = new SocketServer(httpServer)
@@ -90,7 +93,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/info',routeInfo);
+app.use('/info', routeInfo);
 app.use('/api', routeRandom);
 
 
@@ -220,9 +223,48 @@ io.on("connection", async (socket) => {
 
 });
 
-console.log("ARGGG", args)
+
 const PORT = args.PORT;
-const srv = httpServer.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${srv.address().port}`);
-});
-srv.on("error", (error) => console.log(`Error en el servidor: ${error}`));
+const srv = httpServer;
+
+
+if (args.MODE === 'CLUSTER') {
+
+
+  if (cluster.isMaster) {
+    const numCPUs = os.cpus().length;
+    console.log("numCPUs", numCPUs)
+    for (let i = 0; i < numCPUs; i++) {
+      cluster.fork();
+    }
+    cluster.on("exit", () => {
+      console.log(`Worker died ${process.pid}`);
+    })
+  } else {
+
+    srv.on("request", (req, res) => {
+      const pid = process.pid;
+      const fecha = new Date(Date.now());
+
+    });
+
+    try {
+      srv.listen(PORT, () => {
+        console.log(`Servidor escuchando en el puerto ${PORT}. PID: ${process.pid}`);
+      });
+    } catch (err) {
+      console.log("SERVER ERROR", err)
+    }
+
+
+  }
+} else {
+  try {
+    srv.listen(PORT, () => {
+      console.log(`Servidor esuchando en el puerto ${PORT}. PID: ${process.pid}`);
+    });
+    srv.on("error", (error) => console.log(`Error en el servidor: ${error}`));
+  } catch (err) {
+    console.log("SERVER ERROR!", err)
+  }
+}
